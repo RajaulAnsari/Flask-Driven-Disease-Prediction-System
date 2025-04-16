@@ -1,0 +1,7 @@
+.form-outline input::placeholder {
+    color: #bbb;
+  }
+  
+  .form-check-label {
+    font-size: 14px;
+  }

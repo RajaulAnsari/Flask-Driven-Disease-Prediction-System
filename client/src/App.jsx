@@ -1,0 +1,75 @@
+import { createBrowserRouter, RouterProvider } from "react-router-dom";
+import { lazy, Suspense } from "react";
+import Login from "./components/Login";
+import Register from "./components/Register";
+import SymptomsChecker from "./components/SymptomsChecker";
+import PrivateRoute from "./components/PrivateRoute";
+import AdminLogin from "./components/AdminLogin";
+import AdminDashboard from "./components/AdminDashboard";
+import AdminRoute from "./components/AdminRoute";
+const Home = lazy(() => import("./components/Home"));
+
+function App() {
+  return (
+    <>
+      <RouterProvider
+        router={createBrowserRouter([
+          {
+            path: "/",
+            element: (
+              <Suspense fallback={<div>Loading...</div>}>
+                <Home />
+              </Suspense>
+            ),
+          },
+          {
+            path: "/login",
+            element: (
+              <Suspense fallback={<div>Loading...</div>}>
+                <Login />
+              </Suspense>
+            ),
+          },
+          {
+            path: "/register",
+            element: (
+              <Suspense fallback={<div>Loading...</div>}>
+                <Register />
+              </Suspense>
+            ),
+          },
+          {
+            path: "/symptomschecker",
+            element: (
+              <PrivateRoute>
+                <Suspense fallback={<div>Loading...</div>}>
+                  <SymptomsChecker />
+                </Suspense>
+              </PrivateRoute>
+            ),
+          },
+          {
+            path: "/admin",
+            element: (
+              <Suspense fallback={<div>Loading...</div>}>
+                <AdminLogin />
+              </Suspense>
+            ),
+          },
+          {
+            path: "/admin/dashboard",
+            element: (
+              <AdminRoute>
+                <Suspense fallback={<div>Loading...</div>}>
+                  <AdminDashboard />
+                </Suspense>
+              </AdminRoute>
+            ),
+          },
+        ])}
+      />
+    </>
+  );
+}
+
+export default App;

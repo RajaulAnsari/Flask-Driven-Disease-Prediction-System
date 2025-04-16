@@ -1,0 +1,139 @@
+.navbar {
+  background: rgb(0, 0, 0);
+  height: 85px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0 2rem;
+  z-index: 12;
+  position: relative;
+}
+
+.navbar-link {
+  color: #808080;
+  display: flex;
+  align-items: center;
+  text-decoration: none;
+  padding: 0 1rem;
+  height: 100%;
+  cursor: pointer;
+  font-size: 20px;
+  transition: color 0.3s ease-in-out;
+}
+
+.navbar-link.active {
+  color: #ffffff;
+}
+
+.navbar-link:hover {
+  color: #ffffff;
+}
+
+.navbar-bars {
+  display: none;
+  color: #808080;
+  font-size: 28px;
+  cursor: pointer;
+}
+
+.navbar-menu {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.navbar-btn {
+  display: flex;
+  align-items: center;
+}
+
+.navbar-btn-link {
+  border-radius: 4px;
+  background: #808080;
+  padding: 10px 22px;
+  color: #000000;
+  outline: none;
+  border: none;
+  cursor: pointer;
+  transition: all 0.2s ease-in-out;
+  text-decoration: none;
+}
+
+.navbar-btn-link:hover {
+  background: #ffffff;
+  color: #808080;
+}
+
+
+@media screen and (max-width: 958px) {
+  .navbar-bars {
+    display: block;
+    position: absolute;
+    top: 28px;
+    right: 20px;
+    z-index: 20;
+  }
+
+  .navbar-menu,
+  .navbar-btn {
+    display: none;
+  }
+}
+
+
+.navbar-menu.open,
+.navbar-btn.open {
+  display: flex !important;
+  flex-direction: column;
+  position: absolute;
+  top: 85px;
+  left: 0;
+  width: 100%;
+  background: rgb(0, 0, 0);
+  padding: 1rem 2rem;
+  z-index: 10;
+  gap: 1rem;
+}
+
+.navbar-btn.open {
+  justify-content: flex-start;
+}
+
+.navbar-left {
+  display: none;
+}
+
+@media screen and (max-width: 958px) {
+  .navbar {
+    flex-direction: row;
+    justify-content: space-between;
+  }
+
+  .navbar-left {
+    display: flex;
+    align-items: center;
+  }
+
+  .navbar-bars {
+    display: block;
+    position: static;
+    font-size: 28px;
+    cursor: pointer;
+  }
+
+  .navbar-btn {
+    display: flex;
+    position: absolute;
+    right: 20px;
+    top: 28px;
+  }
+
+  .navbar-btn.open {
+    flex-direction: column;
+    top: auto;
+    right: auto;
+    position: static;
+    width: 100%;
+    padding: 0 2rem;
+  }
+}
