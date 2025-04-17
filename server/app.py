@@ -8,14 +8,23 @@ from flask_bcrypt import Bcrypt
 import jwt
 from functools import wraps
 import datetime
+from flask_mail import Mail, Message
 
 
 app = Flask(__name__)
 CORS(app)  # Enable Cross-Origin Resource Sharing for React frontend
+# mail=Mail(app)
 
 app.config["MONGO_URI"]="mongodb://localhost:27017/production-project"
 app.config["SECRET_KEY"] = "dx3e73exneree3xe32c3egvxydg3evxye22s"
 
+app.config['MAIL_SERVER']='smtp.gmail.com'
+app.config['MAIL_PORT'] = 465
+app.config['MAIL_USERNAME'] = 'aidiseasepredictor@gmail.com'
+app.config['MAIL_PASSWORD'] = 'hnnb kunw gopb yznx'
+app.config['MAIL_USE_TLS'] = False
+app.config['MAIL_USE_SSL'] = True
+mail=Mail(app)
 mongo=PyMongo(app)
 bcrypt=Bcrypt(app)
 
@@ -96,7 +105,7 @@ def register():
     # Check if user exists
     user = mongo.db.users.find_one({'username': username})
     if user:
-        return jsonify({'message': 'User already exists'}), 400
+        return jsonify({'message': 'User email already exists'}), 400
 
     # Insert new user into database
     mongo.db.users.insert_one({
@@ -104,8 +113,22 @@ def register():
         'username': username,
         'password': hashed_password
     })
-
+    
+    # Send confirmation email
+    msg = Message(
+        'Registration Successful',
+        sender=app.config['MAIL_USERNAME'],
+        recipients=[username]
+    )
+    msg.body = f"Hello {name},\n\nYour account has been successfully registered! Welcome to our system.\n\nBest regards,\nThe Team"
+    
+    try:
+        mail.send(msg)
+    except Exception as e:
+        return jsonify({'message': 'Failed to send confirmation email', 'error': str(e)}), 500
+    
     return jsonify({'message': 'User registered successfully'}), 201
+
 
 # Route for user login
 @app.route('/api/login', methods=['POST'])
