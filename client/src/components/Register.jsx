@@ -14,6 +14,7 @@ function Register() {
   });
 
   const [message, setMessage] = useState("");
+  const [isLoading, setIsLoading] = useState(false);
 
   const handleChange = (e) => {
     const { id, value, type, checked } = e.target;
@@ -36,6 +37,8 @@ function Register() {
       return;
     }
 
+    setIsLoading(true);
+
     try {
       const res = await fetch("http://localhost:5000/api/register", {
         method: "POST",
@@ -51,7 +54,6 @@ function Register() {
 
       const data = await res.json();
 
-
       if (res.ok) {
         setMessage("✅ " + (data.message || "Registered successfully!"));
         setFormData({
@@ -66,6 +68,8 @@ function Register() {
       }
     } catch (err) {
       setMessage("❗ Server error. Please try again later.");
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -169,8 +173,23 @@ function Register() {
                 )}
 
                 <div className="text-center text-lg-start mt-4 pt-2">
-                  <button type="submit" className="btn btn-primary btn-lg px-5">
-                    Register
+                  <button
+                    type="submit"
+                    className="btn btn-primary btn-lg px-5"
+                    disabled={isLoading}
+                  >
+                    {isLoading ? (
+                      <span>
+                        <span
+                          className="spinner-border spinner-border-sm"
+                          role="status"
+                          aria-hidden="true"
+                        ></span>{" "}
+                        Loading...
+                      </span>
+                    ) : (
+                      "Register"
+                    )}
                   </button>
                   <p className="small fw-bold mt-2 pt-1 mb-0">
                     Already have an account?{" "}
