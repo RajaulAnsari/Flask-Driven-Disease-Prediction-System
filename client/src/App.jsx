@@ -7,6 +7,8 @@ import PrivateRoute from "./components/PrivateRoute";
 import AdminLogin from "./components/AdminLogin";
 import AdminDashboard from "./components/AdminDashboard";
 import AdminRoute from "./components/AdminRoute";
+import BlogPage from "./components/Blog";
+import BlogDetails from "./components/BlogDetails";
 const Home = lazy(() => import("./components/Home"));
 
 function App() {
@@ -64,6 +66,22 @@ function App() {
                   <AdminDashboard />
                 </Suspense>
               </AdminRoute>
+            ),
+          },
+          {
+            path: "/blog",
+            element: (
+              <Suspense fallback={<div>Loading...</div>}>
+                <BlogPage />
+              </Suspense>
+            ),
+          },
+          {
+            path: "/blog/:id",
+            element: (
+              <Suspense fallback={<div>Loading...</div>}>
+                <BlogDetails />
+              </Suspense>
             ),
           },
         ])}
