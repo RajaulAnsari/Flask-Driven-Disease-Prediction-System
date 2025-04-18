@@ -235,10 +235,15 @@ def admin_login():
     if not email or not password:
         return jsonify({'message': 'Email and password are required'}), 400
 
-    admin = mongo.db.admin.find_one({'email': email, 'password': password})
+    admin = mongo.db.admin.find_one({'email': email})
 
     if not admin:
-        return jsonify({'message': 'Invalid email or password'}), 401
+        return jsonify({'error': 'Invalid username or password'}), 401
+
+    # Check if the password is correct
+    if not bcrypt.check_password_hash(admin['password'], password):
+        return jsonify({'error': 'Invalid username or password'}), 401
+    
 
     token = jwt.encode({
         'admin_id': str(admin['_id']),
