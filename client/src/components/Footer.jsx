@@ -30,7 +30,7 @@ const Footer = () => {
 
           <div className="footer-column">
             <p className="footer-heading">Services</p>
-            <a href="#" className="footer-link">
+            <a href="/symptomschecker" className="footer-link">
               Symptom Checker
             </a>
             <a href="#" className="footer-link">
@@ -47,13 +47,13 @@ const Footer = () => {
           <div className="footer-column">
             <p className="footer-heading">Contact Us</p>
             <a
-              href="mailto:contact@diseasepredictor.com"
+              href="mailto:aidiseasepredictor@gmail.com"
               className="footer-link"
             >
               Email Support
             </a>
-            <a href="tel:+1234567890" className="footer-link">
-              +1 (234) 567-890
+            <a href="tel:+9779807906411" className="footer-link">
+              +977-9807906411
             </a>
             <a href="#" className="footer-link">
               Live Chat
@@ -62,22 +62,31 @@ const Footer = () => {
 
           <div className="footer-column">
             <p className="footer-heading">Social Media</p>
-            <a href="#" className="footer-link">
+            <a
+              href="https://www.facebook.com/rajaul.ansari1432/"
+              className="footer-link"
+            >
               <i className="fab fa-facebook-f">
                 <span style={{ marginLeft: "10px" }}>Facebook</span>
               </i>
             </a>
-            <a href="#" className="footer-link">
+            <a
+              href="https://www.instagram.com/razaul_____ansari/"
+              className="footer-link"
+            >
               <i className="fab fa-instagram">
                 <span style={{ marginLeft: "10px" }}>Instagram</span>
               </i>
             </a>
-            <a href="#" className="footer-link">
+            <a href="https://www.x.com/" className="footer-link">
               <i className="fab fa-twitter">
                 <span style={{ marginLeft: "10px" }}>Twitter</span>
               </i>
             </a>
-            <a href="#" className="footer-link">
+            <a
+              href="https://www.linkedin.com/in/md-rajaul-ansari/"
+              className="footer-link"
+            >
               <i className="fab fa-linkedin">
                 <span style={{ marginLeft: "10px" }}>LinkedIn</span>
               </i>

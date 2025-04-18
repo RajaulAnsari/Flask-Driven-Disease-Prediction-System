@@ -9,6 +9,8 @@ import AdminDashboard from "./components/AdminDashboard";
 import AdminRoute from "./components/AdminRoute";
 import BlogPage from "./components/Blog";
 import BlogDetails from "./components/BlogDetails";
+import FAQ from "./components/FAQ";
+import UserHistory from "./components/UserHistory";
 const Home = lazy(() => import("./components/Home"));
 
 function App() {
@@ -51,6 +53,16 @@ function App() {
             ),
           },
           {
+            path: "/reports",
+            element: (
+              <PrivateRoute>
+                <Suspense fallback={<div>Loading...</div>}>
+                  <UserHistory />
+                </Suspense>
+              </PrivateRoute>
+            ),
+          },
+          {
             path: "/admin",
             element: (
               <Suspense fallback={<div>Loading...</div>}>
@@ -81,6 +93,14 @@ function App() {
             element: (
               <Suspense fallback={<div>Loading...</div>}>
                 <BlogDetails />
+              </Suspense>
+            ),
+          },
+          {
+            path: "/faq",
+            element: (
+              <Suspense fallback={<div>Loading...</div>}>
+                <FAQ />
               </Suspense>
             ),
           },

@@ -74,6 +74,8 @@ def token_required(f):
         try:
             data = jwt.decode(token, app.config['SECRET_KEY'], algorithms=["HS256"])
             current_user = mongo.db.users.find_one({'_id': data['user_id']})
+        except jwt.ExpiredSignatureError:
+            return jsonify({'message': 'Token has expired!'}), 401
         except Exception as e:
             return jsonify({'message': 'Token is invalid!'}), 403
 
@@ -148,12 +150,34 @@ def login():
 
     return jsonify({'token': token}), 200
 
-# Protected route that requires login
-@app.route('/api/protected', methods=['GET'])
-@token_required
-def protected_route(current_user):
-    return jsonify({'message': f'Welcome {current_user["username"]}, you are authenticated!'})
 
+@app.route('/api/reports', methods=['POST'])
+@token_required
+def get_reports_by_user( user_id):
+    data = request.get_json()
+    token=data.get('token')
+    decoded_token = jwt.decode(token, app.config['SECRET_KEY'], algorithms=['HS256'])
+    user_id = decoded_token.get('user_id')
+
+    predictions = mongo.db.predictions.find({'user_id': user_id})
+
+    report_data = []
+    for prediction in predictions:
+        report_data.append({
+            'symptoms': prediction.get('symptoms', []),
+            'predicted_disease': prediction.get('predicted_disease', 'N/A'),
+            'description': prediction.get('description', 'No description available'),
+            'precautions': prediction.get('precautions', []),
+            'medications': prediction.get('medications', []),
+            'diets': prediction.get('diets', []),
+            'workouts': prediction.get('workouts', []),
+            'datetime': prediction.get('datetime', 'No date available')
+        })
+
+    if not report_data:
+        return jsonify({'message': 'No reports found for this user'}), 404
+
+    return jsonify({'user_id': user_id, 'predictions': report_data}), 200
 
 # API Route: Predict disease
 @app.route('/api/predict', methods=['POST'])
@@ -193,7 +217,8 @@ def predict():
             'precautions': precut,
             'medications': med,
             'diets': die,
-            'workouts': wrkout
+            'workouts': wrkout,
+            'datetime':datetime.datetime.now()
         })   
 
         return jsonify(response), 200
