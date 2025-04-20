@@ -10,6 +10,7 @@ from functools import wraps
 import datetime
 from flask_mail import Mail, Message
 from config import Config
+from bson import ObjectId
 
 
 app = Flask(__name__)
@@ -178,6 +179,42 @@ def get_reports_by_user( user_id):
         return jsonify({'message': 'No reports found for this user'}), 404
 
     return jsonify({'user_id': user_id, 'predictions': report_data}), 200
+
+
+@app.route('/api/admin/all-predictions', methods=['GET'])
+def get_add_prediction():
+    predictions = list(mongo.db.predictions.find({}))
+
+    for pred in predictions:
+        pred['_id'] = str(pred['_id'])
+
+        user_id = pred.get('user_id')
+        if user_id:
+            try:
+                # Convert string user_id to ObjectId before querying
+                user_obj_id = ObjectId(user_id)
+                user = mongo.db.users.find_one({"_id": user_obj_id})
+
+                if user:
+                    pred['username'] = user.get('username', 'Unknown')
+                else:
+                    pred['username'] = 'Unknown (user not found)'
+            except Exception as e:
+                print(f"[ERROR] Invalid ObjectId: {user_id} -> {e}")
+                pred['username'] = 'Unknown (invalid ID)'
+        else:
+            pred['username'] = 'Unknown (no user_id)'
+
+    return jsonify({'predictions': predictions}), 200
+
+
+
+@app.route('/api/admin/all-users', methods=['GET'])
+def get_add_users():
+    users=list(mongo.db.users.find({}))
+    for pred in users:
+        pred['_id']=str(pred['_id'])
+    return jsonify({'predictions':users}),200
 
 # API Route: Predict disease
 @app.route('/api/predict', methods=['POST'])

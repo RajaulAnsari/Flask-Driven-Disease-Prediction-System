@@ -1,14 +1,16 @@
+// src/components/AdminUsers.js
+
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 
-function AdminDashboard() {
-  const [reports, setReports] = useState([]);
+function AdminAllUsers() {
+  const [users, setUsers] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const navigate = useNavigate();
 
   useEffect(() => {
-    const fetchReports = async () => {
+    const fetchUsers = async () => {
       const token = localStorage.getItem("adminToken");
       if (!token) {
         console.error("No token found in localStorage");
@@ -18,21 +20,22 @@ function AdminDashboard() {
 
       try {
         const response = await fetch(
-          "http://127.0.0.1:5000/api/admin/all-predictions",
+          "http://127.0.0.1:5000/api/admin/all-users",
           {
             method: "GET",
             headers: {
               "Content-Type": "application/json",
+              // Authorization: `Bearer ${token}`, // Optional
             },
           }
         );
 
         if (!response.ok) {
-          throw new Error(`Failed to fetch reports: ${response.statusText}`);
+          throw new Error(`Failed to fetch users: ${response.statusText}`);
         }
 
         const data = await response.json();
-        setReports(data.predictions);
+        setUsers(data.predictions);
       } catch (err) {
         console.error("Fetch error:", err);
         setError(err.message);
@@ -41,20 +44,20 @@ function AdminDashboard() {
       }
     };
 
-    fetchReports();
+    fetchUsers();
   }, []);
 
   const handleLogout = () => {
     localStorage.removeItem("adminToken");
-    navigate("/admin"); // Change this to your admin login route
+    navigate("/admin");
   };
 
   const goToReports = () => {
-    navigate("/admin/dashboard"); // Reload current page
+    navigate("/admin/dashboard");
   };
 
   const goToUsers = () => {
-    navigate("/admin/users"); // Assuming you have this route created
+    navigate("/admin/users");
   };
 
   if (loading) {
@@ -66,7 +69,7 @@ function AdminDashboard() {
   }
 
   return (
-    <div className="admin-reports" style={{ padding: "20px" }}>
+    <div className="admin-users" style={{ padding: "20px" }}>
       {/* Header Buttons */}
       <div
         style={{
@@ -89,9 +92,9 @@ function AdminDashboard() {
         </button>
       </div>
 
-      <h2>Admin: All Prediction Reports</h2>
-      {reports.length === 0 ? (
-        <p>No reports found.</p>
+      <h2>Admin: All Users</h2>
+      {users.length === 0 ? (
+        <p>No users found.</p>
       ) : (
         <div style={{ overflowX: "auto" }}>
           <table
@@ -103,34 +106,18 @@ function AdminDashboard() {
             <thead>
               <tr>
                 <th>S.N.</th>
-                <th>Email</th> {/* Added Username column */}
-                <th>Disease</th>
-                <th>Description</th>
-                <th>Symptoms</th>
-                <th>Precautions</th>
-                <th>Medications</th>
-                <th>Diets</th>
-                <th>Workouts</th>
-                <th>Date</th>
+                <th>Name</th>
+                <th>Email</th>
+                <th>Role</th>
               </tr>
             </thead>
             <tbody>
-              {reports.map((report, index) => (
-                <tr key={index}>
+              {users.map((user, index) => (
+                <tr key={user._id}>
                   <td>{index + 1}</td>
-                  <td>{report.username}</td> {/* Display username */}
-                  <td>{report.predicted_disease}</td>
-                  <td>{report.description}</td>
-                  <td>{report.symptoms.join(", ")}</td>
-                  <td>{report.precautions.join(", ")}</td>
-                  <td>{report.medications.join(", ")}</td>
-                  <td>{report.diets.join(", ")}</td>
-                  <td>{report.workouts.join(", ")}</td>
-                  <td>
-                    {report.datetime
-                      ? new Date(report.datetime.$date).toLocaleString()
-                      : "No date"}
-                  </td>
+                  <td>{user.name || "N/A"}</td>
+                  <td>{user.username || "N/A"}</td>
+                  <td>{user.role || "user"}</td>
                 </tr>
               ))}
             </tbody>
@@ -141,4 +128,4 @@ function AdminDashboard() {
   );
 }
 
-export default AdminDashboard;
+export default AdminAllUsers;
