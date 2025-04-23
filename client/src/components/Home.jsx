@@ -3,6 +3,7 @@ import Footer from "./Footer";
 import "./Home.css";
 import boyAvatar from "../assets/boyavatar1.png";
 import girlAvatar from "../assets/girlavatar1.png";
+import Chat from "./Chat";
 
 function Home() {
   return (
@@ -85,7 +86,7 @@ function Home() {
           <p className="author">- Amanda Lee</p>
         </div>
       </div>
-
+      <Chat />
       <Footer />
     </>
   );
