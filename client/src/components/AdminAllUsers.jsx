@@ -79,10 +79,15 @@ function AdminAllUsers() {
         }}
       >
         <div>
-          <button onClick={goToReports} style={{ marginRight: "10px" }}>
+          <button
+            onClick={goToReports}
+            style={{ marginRight: "10px", backgroundColor: "#ffffff" }}
+          >
             All Reports
           </button>
-          <button onClick={goToUsers}>All Users</button>
+          <button onClick={goToUsers} style={{ backgroundColor: "#00bb00" }}>
+            All Users
+          </button>
         </div>
         <button
           onClick={handleLogout}
@@ -96,14 +101,9 @@ function AdminAllUsers() {
       {users.length === 0 ? (
         <p>No users found.</p>
       ) : (
-        <div style={{ overflowX: "auto" }}>
-          <table
-            border="1"
-            cellPadding="10"
-            cellSpacing="0"
-            style={{ width: "100%", borderCollapse: "collapse" }}
-          >
-            <thead>
+        <div className="table-responsive">
+          <table className="table table-striped table-hover table-bordered align-middle text-center">
+            <thead className="table-dark">
               <tr>
                 <th>S.N.</th>
                 <th>Name</th>
@@ -115,9 +115,17 @@ function AdminAllUsers() {
               {users.map((user, index) => (
                 <tr key={user._id}>
                   <td>{index + 1}</td>
-                  <td>{user.name || "N/A"}</td>
-                  <td>{user.username || "N/A"}</td>
-                  <td>{user.role || "user"}</td>
+                  <td className="text-nowrap">{user.name || "N/A"}</td>
+                  <td className="text-nowrap">{user.username || "N/A"}</td>
+                  <td>
+                    <span
+                      className={`badge ${
+                        user.role === "admin" ? "bg-success" : "bg-secondary"
+                      }`}
+                    >
+                      {user.role || "user"}
+                    </span>
+                  </td>
                 </tr>
               ))}
             </tbody>

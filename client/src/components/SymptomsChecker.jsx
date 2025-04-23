@@ -236,22 +236,33 @@ const SymptomsChecker = () => {
 
         {result && (
           <div className="mt-4">
-            <h4>Disease: {result.predicted_disease}</h4>
-            <p>
-              <strong>Description:</strong> {result.description}
-            </p>
-            <p>
-              <strong>Precautions:</strong> {result.precautions.join(", ")}
-            </p>
-            <p>
-              <strong>Medications:</strong> {result.medications.join(", ")}
-            </p>
-            <p>
-              <strong>Diet:</strong> {result.diets.join(", ")}
-            </p>
-            <p>
-              <strong>Workout:</strong> {result.workouts.join(", ")}
-            </p>
+            <h4 className="mb-3 text-success">
+              Predicted Disease: <strong>{result.predicted_disease}</strong>
+            </h4>
+            <table className="table table-bordered table-striped">
+              <tbody>
+                <tr>
+                  <th>Description</th>
+                  <td>{result.description}</td>
+                </tr>
+                <tr>
+                  <th>Precautions</th>
+                  <td>{result.precautions.join(", ")}</td>
+                </tr>
+                <tr>
+                  <th>Medications</th>
+                  <td>{result.medications.join(", ")}</td>
+                </tr>
+                <tr>
+                  <th>Diet</th>
+                  <td>{result.diets.join(", ")}</td>
+                </tr>
+                <tr>
+                  <th>Workout</th>
+                  <td>{result.workouts.join(", ")}</td>
+                </tr>
+              </tbody>
+            </table>
           </div>
         )}
       </div>

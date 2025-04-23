@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
+import "./Admin.css";
 
 function AdminDashboard() {
   const [reports, setReports] = useState([]);
@@ -76,10 +77,15 @@ function AdminDashboard() {
         }}
       >
         <div>
-          <button onClick={goToReports} style={{ marginRight: "10px" }}>
+          <button
+            onClick={goToReports}
+            style={{ marginRight: "10px", backgroundColor: "#00bb00" }}
+          >
             All Reports
           </button>
-          <button onClick={goToUsers}>All Users</button>
+          <button onClick={goToUsers} style={{ backgroundColor: "#ffffff" }}>
+            All Users
+          </button>
         </div>
         <button
           onClick={handleLogout}
@@ -93,17 +99,12 @@ function AdminDashboard() {
       {reports.length === 0 ? (
         <p>No reports found.</p>
       ) : (
-        <div style={{ overflowX: "auto" }}>
-          <table
-            border="1"
-            cellPadding="10"
-            cellSpacing="0"
-            style={{ width: "100%", borderCollapse: "collapse" }}
-          >
-            <thead>
+        <div className="table-responsive">
+          <table className="table table-striped table-hover table-bordered align-middle text-center">
+            <thead className="table-dark">
               <tr>
                 <th>S.N.</th>
-                <th>Email</th> {/* Added Username column */}
+                <th>Email</th>
                 <th>Disease</th>
                 <th>Description</th>
                 <th>Symptoms</th>
@@ -118,7 +119,7 @@ function AdminDashboard() {
               {reports.map((report, index) => (
                 <tr key={index}>
                   <td>{index + 1}</td>
-                  <td>{report.username}</td> {/* Display username */}
+                  <td className="text-nowrap">{report.username}</td>
                   <td>{report.predicted_disease}</td>
                   <td>{report.description}</td>
                   <td>{report.symptoms.join(", ")}</td>
@@ -126,7 +127,7 @@ function AdminDashboard() {
                   <td>{report.medications.join(", ")}</td>
                   <td>{report.diets.join(", ")}</td>
                   <td>{report.workouts.join(", ")}</td>
-                  <td>
+                  <td className="text-nowrap">
                     {report.datetime
                       ? new Date(report.datetime.$date).toLocaleString()
                       : "No date"}

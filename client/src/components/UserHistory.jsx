@@ -64,42 +64,61 @@ function UserHistory() {
   return (
     <>
       <Navbar />
-      <div className="user-history">
-        <h2>Your Prediction Reports</h2>
-        {reports.length === 0 ? (
-          <p>No reports found.</p>
-        ) : (
-          reports.map((report, index) => (
-            <div key={index} className="report-item">
-              <h3>Predicted Disease: {report.predicted_disease}</h3>
-              <p>
-                <strong>Description:</strong> {report.description}
-              </p>
-              <p>
-                <strong>Symptoms:</strong> {report.symptoms.join(", ")}
-              </p>
-              <p>
-                <strong>Precautions:</strong> {report.precautions.join(", ")}
-              </p>
-              <p>
-                <strong>Medications:</strong> {report.medications.join(", ")}
-              </p>
-              <p>
-                <strong>Diets:</strong> {report.diets.join(", ")}
-              </p>
-              <p>
-                <strong>Workouts:</strong> {report.workouts.join(", ")}
-              </p>
-              <p>
-                <strong>Date:</strong>{" "}
-                {report.datetime
-                  ? new Date(report.datetime.$date).toUTCString()
-                  : "No date available"}
-              </p>
-            </div>
-          ))
-        )}
-      </div>
+      <section className="container">
+        <br />
+        <div className="user-history">
+          <h2 className="text-center">Your Prediction Reports</h2>
+          {reports.length === 0 ? (
+            <p>No reports found.</p>
+          ) : (
+            reports.map((report, index) => (
+              <div key={index} className="mb-4">
+                <h4 className="text-primary">Report #{index + 1}</h4>
+                <table className="table table-bordered table-hover">
+                  <tbody>
+                    <tr>
+                      <th>Predicted Disease</th>
+                      <td className="fw-bold">{report.predicted_disease}</td>
+                    </tr>
+                    <tr>
+                      <th>Description</th>
+                      <td>{report.description}</td>
+                    </tr>
+                    <tr>
+                      <th>Symptoms</th>
+                      <td>{report.symptoms.join(", ")}</td>
+                    </tr>
+                    <tr>
+                      <th>Precautions</th>
+                      <td>{report.precautions.join(", ")}</td>
+                    </tr>
+                    <tr>
+                      <th>Medications</th>
+                      <td>{report.medications.join(", ")}</td>
+                    </tr>
+                    <tr>
+                      <th>Diets</th>
+                      <td>{report.diets.join(", ")}</td>
+                    </tr>
+                    <tr>
+                      <th>Workouts</th>
+                      <td>{report.workouts.join(", ")}</td>
+                    </tr>
+                    <tr>
+                      <th>Date</th>
+                      <td>
+                        {report.datetime
+                          ? new Date(report.datetime.$date).toLocaleString()
+                          : "No date available"}
+                      </td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+            ))
+          )}
+        </div>
+      </section>
       <Footer />
     </>
   );

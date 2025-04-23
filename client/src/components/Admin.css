@@ -1,0 +1,9 @@
+.admin-reports th,
+.admin-reports td {
+  vertical-align: middle;
+  font-size: 0.95rem;
+}
+
+.admin-reports .table td {
+  word-break: break-word;
+}
