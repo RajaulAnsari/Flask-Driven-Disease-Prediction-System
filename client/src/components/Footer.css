@@ -1,6 +1,6 @@
 .footer-box {
   padding: 5% 2.5%;
-  background: black;
+  background: #0d1b2a;
   bottom: 0;
   width: 100%;
 }
@@ -42,7 +42,7 @@
 }
 
 .footer-link:hover {
-  color: green;
+  color: #00d1b2;
 }
 
 .footer-heading {

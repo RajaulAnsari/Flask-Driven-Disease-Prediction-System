@@ -1,5 +1,5 @@
 .navbar {
-  background: rgb(0, 0, 0);
+  background: #0d1b2a; /* Deep navy blue */
   height: 85px;
   display: flex;
   justify-content: space-between;
@@ -10,7 +10,7 @@
 }
 
 .navbar-link {
-  color: #808080;
+  color: #a9bcd0; /* Light bluish-gray */
   display: flex;
   align-items: center;
   text-decoration: none;
@@ -21,17 +21,14 @@
   transition: color 0.3s ease-in-out;
 }
 
-.navbar-link.active {
-  color: #ffffff;
-}
-
+.navbar-link.active,
 .navbar-link:hover {
-  color: #ffffff;
+  color: #00d1b2; /* Teal */
 }
 
 .navbar-bars {
   display: none;
-  color: #808080;
+  color: #a9bcd0;
   font-size: 28px;
   cursor: pointer;
 }
@@ -49,22 +46,23 @@
 
 .navbar-btn-link {
   border-radius: 4px;
-  background: #808080;
+  background: #00d1b2; /* Teal */
   padding: 10px 22px;
-  color: #000000;
+  color: #ffffff;
   outline: none;
   border: none;
   cursor: pointer;
   transition: all 0.2s ease-in-out;
   text-decoration: none;
+  font-weight: 600;
 }
 
 .navbar-btn-link:hover {
-  background: #ffffff;
-  color: #808080;
+  background: #00a896; /* Slightly darker teal */
+  color: #ffffff;
 }
 
-
+/* Mobile View */
 @media screen and (max-width: 958px) {
   .navbar-bars {
     display: block;
@@ -80,7 +78,6 @@
   }
 }
 
-
 .navbar-menu.open,
 .navbar-btn.open {
   display: flex !important;
@@ -89,7 +86,7 @@
   top: 85px;
   left: 0;
   width: 100%;
-  background: rgb(0, 0, 0);
+  background: #1b263b; /* Darker navy */
   padding: 1rem 2rem;
   z-index: 10;
   gap: 1rem;
