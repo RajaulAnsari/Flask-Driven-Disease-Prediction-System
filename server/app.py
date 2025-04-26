@@ -31,6 +31,7 @@ diets = pd.read_csv('data/diets.csv')
 
 # Load the model
 model = pickle.load(open('models/svc.pkl', 'rb'))
+model_medicine=pickle.load(open('models/medicine_model.pkl','rb'))
 
 # Reversed disease dictionary and symptoms_dict (same as provided)
 reversed_disease_dict={0: '(vertigo) Paroymsal  Positional Vertigo', 1: 'AIDS', 2: 'Acne', 3: 'Alcoholic hepatitis', 4: 'Allergy', 5: 'Arthritis', 6: 'Bronchial Asthma', 7: 'Cervical spondylosis', 8: 'Chicken pox', 9: 'Chronic cholestasis', 10: 'Common Cold', 11: 'Dengue', 12: 'Diabetes ', 13: 'Dimorphic hemmorhoids(piles)', 14: 'Drug Reaction', 15: 'Fungal infection', 16: 'GERD', 17: 'Gastroenteritis', 18: 'Heart attack', 19: 'Hepatitis B', 20: 'Hepatitis C', 21: 'Hepatitis D', 22: 'Hepatitis E', 23: 'Hypertension ', 24: 'Hyperthyroidism', 25: 'Hypoglycemia', 26: 'Hypothyroidism', 27: 'Impetigo', 28: 'Jaundice', 29: 'Malaria', 30: 'Migraine', 31: 'Osteoarthristis', 32: 'Paralysis (brain hemorrhage)', 33: 'Peptic ulcer diseae', 34: 'Pneumonia', 35: 'Psoriasis', 36: 'Tuberculosis', 37: 'Typhoid', 38: 'Urinary tract infection', 39: 'Varicose veins', 40: 'hepatitis A'}
@@ -83,6 +84,69 @@ def token_required(f):
         return f(current_user, *args, **kwargs)
 
     return decorated_function
+
+# REcommand a medicine
+def recommend_medicine(use_query):
+    recommendations = []
+    # Lowercase the input query
+    use_query = [query.lower() for query in use_query] 
+
+    for i, row in model_medicine.iterrows():
+        composition_uses = row['composition_uses'].lower()
+        if all(query in composition_uses for query in use_query):
+            recommendations.append([row['Medicine Name'], row['Medicine Score Review'],row['Image URL']])
+
+    if recommendations:
+        sorted_recommendations = sorted(recommendations, key=lambda x: x[1], reverse=True)[:1]
+        seen = set()
+        recommended_medicines = [x for x in sorted_recommendations if tuple(x) not in seen and not seen.add(tuple(x))]
+        return recommended_medicines
+    else:
+        return "No medicines found for this disease."
+
+
+@app.route('/api/medicine', methods=['POST'])
+def medicines():
+    try:
+        # Get the JSON data from the request body
+        data = request.get_json()
+
+        # Check if 'predicted_disease' key is present
+        use_query = data.get('predicted_disease')
+        if not use_query or not isinstance(use_query, list):
+            return jsonify({
+                'success': False,
+                'message': 'Invalid input: Please provide a list of predicted diseases/symptoms.'
+            }), 400
+
+        # Get recommended medicines
+        recommended_medicines = recommend_medicine(use_query)
+
+        if recommended_medicines == "No medicines found for this disease.":
+            return jsonify({
+                'success': False,
+                'message': 'No medicines found for the provided symptoms.'
+            }), 404
+
+        # Format the medicine list into nice JSON objects
+        formatted_medicines = []
+        for med in recommended_medicines:
+            formatted_medicines.append({
+                'medicine_name': med[0],
+                'medicine_score': med[1],
+                'medicine_image_url': med[2]
+            })
+
+        return jsonify({
+            'success': True,
+            'recommended_medicines': formatted_medicines
+        }), 200
+
+    except Exception as e:
+        return jsonify({
+            'success': False,
+            'error': f'Error occurred while fetching medicines: {str(e)}'
+        }), 500
 
 # Route for user registration
 @app.route('/api/register', methods=['POST'])

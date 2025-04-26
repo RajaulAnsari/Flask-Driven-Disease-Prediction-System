@@ -141,6 +141,7 @@ const symptoms_dict = {
 const SymptomsChecker = () => {
   const [symptoms, setSymptoms] = useState("");
   const [result, setResult] = useState(null);
+  const [medicines, setMedicines] = useState(null); // Added state for medicines
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
   const [suggestions, setSuggestions] = useState([]);
@@ -153,13 +154,14 @@ const SymptomsChecker = () => {
     setLoading(true);
     setError("");
     setResult(null);
+    setMedicines(null);
 
     try {
+      // First, predict the disease
       const response = await fetch("http://127.0.0.1:5000/api/predict", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
-          // Authorization: token,
         },
         body: JSON.stringify({ symptoms: symptomList, token: token }),
       });
@@ -168,6 +170,28 @@ const SymptomsChecker = () => {
 
       if (response.ok) {
         setResult(data);
+
+        // Now fetch medicines using the predicted disease
+        const medicineResponse = await fetch(
+          "http://127.0.0.1:5000/api/medicine",
+          {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({
+              predicted_disease: [data.predicted_disease],
+            }),
+          }
+        );
+
+        const medicineData = await medicineResponse.json();
+
+        if (medicineResponse.ok) {
+          setMedicines(medicineData.recommended_medicines);
+        } else {
+          setError(medicineData.message || "No medicines found.");
+        }
       } else {
         setError(data.error || "Something went wrong.");
       }
@@ -205,7 +229,7 @@ const SymptomsChecker = () => {
     <>
       <Navbar />
       <div className="container mt-5">
-        <h2>Disease Prediction</h2>
+        <h2>Disease Prediction & Medicine Recommendation</h2>
         <form onSubmit={handleSubmit}>
           <input
             type="text"
@@ -263,6 +287,27 @@ const SymptomsChecker = () => {
                 </tr>
               </tbody>
             </table>
+          </div>
+        )}
+
+        {medicines && (
+          <div className="mt-4">
+            <h4 className="mb-3 text-info">Recommended Medicines</h4>
+            <ul>
+              {medicines.map((medicine, index) => (
+                <li key={index}>
+                  <img
+                    src={medicine.medicine_image_url}
+                    alt="medicine"
+                    width=""
+                    style={{ marginRight: "10px" }}
+                  />
+                  <br />
+                  <strong>{medicine.medicine_name}</strong> -{" "}
+                  {medicine.medicine_score}⭐
+                </li>
+              ))}
+            </ul>
           </div>
         )}
       </div>

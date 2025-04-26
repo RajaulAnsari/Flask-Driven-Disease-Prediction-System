@@ -108,7 +108,7 @@ function UserHistory() {
                       <th>Date</th>
                       <td>
                         {report.datetime
-                          ? new Date(report.datetime.$date).toLocaleString()
+                          ? new Date(report.datetime.$date).toUTCString()
                           : "No date available"}
                       </td>
                     </tr>
