@@ -336,22 +336,31 @@ const SymptomsChecker = () => {
           <div className="mt-4">
             <h4 className="mb-3 text-info">Recommended Doctors</h4>
             <div className="row">
-              {doctors.map((doc, index) => (
-                <div key={index} className="col-md-6 mb-3">
-                  <div className="card">
-                    <div className="card-body">
-                      <h5 className="card-title">{doc.name}</h5>
-                      <p className="card-text">
-                        <strong>Specialist:</strong> {doc.specialist}
-                        <br />
-                        <strong>Qualifications:</strong> {doc.qualifications}
-                        <br />
-                        <strong>Satisfaction:</strong> {doc.satisfaction}
-                      </p>
+              {doctors
+                .filter(
+                  (doc, index, self) =>
+                    index ===
+                    self.findIndex(
+                      (d) =>
+                        d.name === doc.name && d.specialist === doc.specialist
+                    )
+                ) // Remove duplicates based on name and specialist
+                .map((doc, index) => (
+                  <div key={index} className="col-md-6 mb-3">
+                    <div className="card">
+                      <div className="card-body">
+                        <h5 className="card-title">{doc.name}</h5>
+                        <p className="card-text">
+                          <strong>Specialist:</strong> {doc.specialist}
+                          <br />
+                          <strong>Qualifications:</strong> {doc.qualifications}
+                          <br />
+                          <strong>Satisfaction:</strong> {doc.satisfaction}
+                        </p>
+                      </div>
                     </div>
                   </div>
-                </div>
-              ))}
+                ))}
             </div>
           </div>
         )}
