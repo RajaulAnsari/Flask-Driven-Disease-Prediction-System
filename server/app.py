@@ -32,6 +32,7 @@ diets = pd.read_csv('data/diets.csv')
 # Load the model
 model = pickle.load(open('models/svc.pkl', 'rb'))
 model_medicine=pickle.load(open('models/medicine_model.pkl','rb'))
+mergedataset_loaded = pd.read_pickle('./models/DoctorAssign_model.pkl')
 
 # Reversed disease dictionary and symptoms_dict (same as provided)
 reversed_disease_dict={0: '(vertigo) Paroymsal  Positional Vertigo', 1: 'AIDS', 2: 'Acne', 3: 'Alcoholic hepatitis', 4: 'Allergy', 5: 'Arthritis', 6: 'Bronchial Asthma', 7: 'Cervical spondylosis', 8: 'Chicken pox', 9: 'Chronic cholestasis', 10: 'Common Cold', 11: 'Dengue', 12: 'Diabetes ', 13: 'Dimorphic hemmorhoids(piles)', 14: 'Drug Reaction', 15: 'Fungal infection', 16: 'GERD', 17: 'Gastroenteritis', 18: 'Heart attack', 19: 'Hepatitis B', 20: 'Hepatitis C', 21: 'Hepatitis D', 22: 'Hepatitis E', 23: 'Hypertension ', 24: 'Hyperthyroidism', 25: 'Hypoglycemia', 26: 'Hypothyroidism', 27: 'Impetigo', 28: 'Jaundice', 29: 'Malaria', 30: 'Migraine', 31: 'Osteoarthristis', 32: 'Paralysis (brain hemorrhage)', 33: 'Peptic ulcer diseae', 34: 'Pneumonia', 35: 'Psoriasis', 36: 'Tuberculosis', 37: 'Typhoid', 38: 'Urinary tract infection', 39: 'Varicose veins', 40: 'hepatitis A'}
@@ -103,6 +104,68 @@ def recommend_medicine(use_query):
         return recommended_medicines
     else:
         return "No medicines found for this disease."
+
+def recommend_doctor1(disease_input):
+    disease_input = disease_input.strip().lower()
+    
+    # Find specialist for the disease
+    row = mergedataset_loaded[mergedataset_loaded['Disease'].str.strip().str.lower() == disease_input]
+    
+    if row.empty:
+        return "No specialist found for this disease."
+    
+    specialist = row.iloc[0]['Specialist']
+
+    # Find all matching doctors
+    matched_doctors = mergedataset_loaded[
+        mergedataset_loaded['Specialist'].str.strip().str.lower() == specialist.lower()
+    ]
+    matched_doctors = matched_doctors.sort_values(by='SATISFACTION', ascending=False)
+    
+    if matched_doctors.empty:
+        return f"No doctors found for specialist: {specialist}"
+    
+    return matched_doctors[['Name', 'Specialist', 'QUALIFICATIONS', 'SATISFACTION']]
+
+@app.route('/api/doctor', methods=['POST'])
+def doctors():
+    try:
+        data = request.get_json()
+        disease_input = data.get('predicted_disease')
+
+        if not disease_input or not isinstance(disease_input, str):
+            return jsonify({
+                'success': False,
+                'message': 'Invalid input: Please provide a disease name as a string.'
+            }), 400
+
+        recommended_doctors = recommend_doctor1(disease_input)
+
+        if isinstance(recommended_doctors, str):
+            return jsonify({
+                'success': False,
+                'message': recommended_doctors
+            }), 404
+
+        formatted_doctors = []
+        for _, row in recommended_doctors.iterrows():
+            formatted_doctors.append({
+                'name': row['Name'],
+                'specialist': row['Specialist'],
+                'qualifications': row['QUALIFICATIONS'],
+                'satisfaction': row['SATISFACTION']
+            })
+
+        return jsonify({
+            'success': True,
+            'recommended_doctors': formatted_doctors
+        }), 200
+
+    except Exception as e:
+        return jsonify({
+            'success': False,
+            'error': f'Error occurred while fetching doctors: {str(e)}'
+        }), 500
 
 
 @app.route('/api/medicine', methods=['POST'])

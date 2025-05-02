@@ -141,7 +141,8 @@ const symptoms_dict = {
 const SymptomsChecker = () => {
   const [symptoms, setSymptoms] = useState("");
   const [result, setResult] = useState(null);
-  const [medicines, setMedicines] = useState(null); // Added state for medicines
+  const [medicines, setMedicines] = useState(null);
+  const [doctors, setDoctors] = useState(null);
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
   const [suggestions, setSuggestions] = useState([]);
@@ -155,9 +156,9 @@ const SymptomsChecker = () => {
     setError("");
     setResult(null);
     setMedicines(null);
+    setDoctors(null);
 
     try {
-      // First, predict the disease
       const response = await fetch("http://127.0.0.1:5000/api/predict", {
         method: "POST",
         headers: {
@@ -171,7 +172,6 @@ const SymptomsChecker = () => {
       if (response.ok) {
         setResult(data);
 
-        // Now fetch medicines using the predicted disease
         const medicineResponse = await fetch(
           "http://127.0.0.1:5000/api/medicine",
           {
@@ -191,6 +191,27 @@ const SymptomsChecker = () => {
           setMedicines(medicineData.recommended_medicines);
         } else {
           setError(medicineData.message || "No medicines found.");
+        }
+
+        const doctorResponse = await fetch("http://127.0.0.1:5000/api/doctor", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            predicted_disease: data.predicted_disease,
+          }),
+        });
+
+        const doctorData = await doctorResponse.json();
+
+        if (doctorResponse.ok) {
+          setDoctors(doctorData.recommended_doctors);
+        } else {
+          setError(
+            doctorData.message ||
+              "Currently no doctors available — we are working on that!"
+          );
         }
       } else {
         setError(data.error || "Something went wrong.");
@@ -310,8 +331,31 @@ const SymptomsChecker = () => {
             </ul>
           </div>
         )}
+
+        {doctors && doctors.length > 0 && (
+          <div className="mt-4">
+            <h4 className="mb-3 text-info">Recommended Doctors</h4>
+            <div className="row">
+              {doctors.map((doc, index) => (
+                <div key={index} className="col-md-6 mb-3">
+                  <div className="card">
+                    <div className="card-body">
+                      <h5 className="card-title">{doc.name}</h5>
+                      <p className="card-text">
+                        <strong>Specialist:</strong> {doc.specialist}
+                        <br />
+                        <strong>Qualifications:</strong> {doc.qualifications}
+                        <br />
+                        <strong>Satisfaction:</strong> {doc.satisfaction}
+                      </p>
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
       </div>
-      <br />
       <Footer />
     </>
   );
