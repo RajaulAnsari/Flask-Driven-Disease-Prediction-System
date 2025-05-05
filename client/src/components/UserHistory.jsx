@@ -112,6 +112,54 @@ function UserHistory() {
                           : "No date available"}
                       </td>
                     </tr>
+                    <tr>
+                      <th>Recommended Medicines</th>
+                      <td>
+                        {report.recommended_medicines.length > 0 ? (
+                          <ul>
+                            {report.recommended_medicines.map((med, i) => (
+                              <li key={i}>
+                                <strong>{med.medicine_name}</strong> (Score:{" "}
+                                {med.medicine_score})
+                                <br />
+                                <img
+                                  src={med.medicine_image_url}
+                                  alt={med.medicine_name}
+                                  width="100"
+                                  style={{
+                                    marginTop: "5px",
+                                    borderRadius: "8px",
+                                  }}
+                                />
+                              </li>
+                            ))}
+                          </ul>
+                        ) : (
+                          "No recommended medicines"
+                        )}
+                      </td>
+                    </tr>
+                    <tr>
+                      <th>Recommended Doctors</th>
+                      <td>
+                        {report.recommended_doctors &&
+                        report.recommended_doctors.length > 0 ? (
+                          <ul>
+                            {report.recommended_doctors.map((doc, i) => (
+                              <li key={i} style={{ marginBottom: "10px" }}>
+                                <strong>{doc.name}</strong> ({doc.specialist})
+                                <br />
+                                <em>{doc.qualifications}</em>
+                                <br />
+                                <span>Satisfaction: {doc.satisfaction}</span>
+                              </li>
+                            ))}
+                          </ul>
+                        ) : (
+                          "No recommended doctors"
+                        )}
+                      </td>
+                    </tr>
                   </tbody>
                 </table>
               </div>

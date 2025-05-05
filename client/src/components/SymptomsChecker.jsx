@@ -181,6 +181,7 @@ const SymptomsChecker = () => {
             },
             body: JSON.stringify({
               predicted_disease: [data.predicted_disease],
+              token: token,
             }),
           }
         );
@@ -200,6 +201,7 @@ const SymptomsChecker = () => {
           },
           body: JSON.stringify({
             predicted_disease: data.predicted_disease,
+            token: token,
           }),
         });
 

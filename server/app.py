@@ -132,6 +132,9 @@ def doctors():
     try:
         data = request.get_json()
         disease_input = data.get('predicted_disease')
+        token = data.get('token')
+        decoded_token = jwt.decode(token, app.config['SECRET_KEY'], algorithms=['HS256'])
+        user_id = decoded_token.get('user_id')
 
         if not disease_input or not isinstance(disease_input, str):
             return jsonify({
@@ -148,13 +151,25 @@ def doctors():
             }), 404
 
         formatted_doctors = []
+        seen_doctors = set()  # For tracking duplicates based on name + specialist
+
         for _, row in recommended_doctors.iterrows():
-            formatted_doctors.append({
-                'name': row['Name'],
-                'specialist': row['Specialist'],
-                'qualifications': row['QUALIFICATIONS'],
-                'satisfaction': row['SATISFACTION']
-            })
+            unique_key = f"{row['Name'].strip().lower()}|{row['Specialist'].strip().lower()}"
+            if unique_key not in seen_doctors:
+                seen_doctors.add(unique_key)
+                formatted_doctors.append({
+                    'name': row['Name'],
+                    'specialist': row['Specialist'],
+                    'qualifications': row['QUALIFICATIONS'],
+                    'satisfaction': row['SATISFACTION']
+                })
+
+        # Store in MongoDB
+        mongo.db.doctor_pred.insert_one({
+            'user_id': user_id,
+            'predicted_disease': disease_input,
+            'recommended_doctors': formatted_doctors
+        })
 
         return jsonify({
             'success': True,
@@ -168,6 +183,7 @@ def doctors():
         }), 500
 
 
+
 @app.route('/api/medicine', methods=['POST'])
 def medicines():
     try:
@@ -176,6 +192,9 @@ def medicines():
 
         # Check if 'predicted_disease' key is present
         use_query = data.get('predicted_disease')
+        token=data.get('token')
+        decoded_token = jwt.decode(token, app.config['SECRET_KEY'], algorithms=['HS256'])
+        user_id = decoded_token.get('user_id')
         if not use_query or not isinstance(use_query, list):
             return jsonify({
                 'success': False,
@@ -199,6 +218,13 @@ def medicines():
                 'medicine_score': med[1],
                 'medicine_image_url': med[2]
             })
+        
+         # Store in MongoDB
+        mongo.db.medicines_pred.insert_one({
+            'user_id':user_id,
+            'predicted_disease': use_query,
+            'recommended_medicines': formatted_medicines
+        })
 
         return jsonify({
             'success': True,
@@ -288,9 +314,22 @@ def get_reports_by_user( user_id):
     user_id = decoded_token.get('user_id')
 
     predictions = mongo.db.predictions.find({'user_id': user_id})
+    medicines = list(mongo.db.medicines_pred.find({'user_id': user_id}))
+    doctors=list(mongo.db.doctor_pred.find({'user_id':user_id}))
 
     report_data = []
     for prediction in predictions:
+        pred_disease = prediction.get('predicted_disease', '')
+        
+        # Try to find matching medicine entry
+        matching_medicine = next(
+            (med for med in medicines if pred_disease in med.get('predicted_disease', [])), 
+            None
+        )
+        matching_doctor=next(
+            (doctor for doctor in doctors if pred_disease in doctor.get('predicted_disease', [])),
+            None
+        )
         report_data.append({
             'symptoms': prediction.get('symptoms', []),
             'predicted_disease': prediction.get('predicted_disease', 'N/A'),
@@ -299,8 +338,11 @@ def get_reports_by_user( user_id):
             'medications': prediction.get('medications', []),
             'diets': prediction.get('diets', []),
             'workouts': prediction.get('workouts', []),
-            'datetime': prediction.get('datetime', 'No date available')
+            'datetime': prediction.get('datetime', 'No date available'),
+            'recommended_medicines': matching_medicine.get('recommended_medicines', []) if matching_medicine else [],
+            'recommended_doctors': matching_doctor.get('recommended_doctors',[]) if matching_doctor else []
         })
+
 
     if not report_data:
         return jsonify({'message': 'No reports found for this user'}), 404
