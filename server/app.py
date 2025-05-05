@@ -351,28 +351,40 @@ def get_reports_by_user( user_id):
 
 
 @app.route('/api/admin/all-predictions', methods=['GET'])
-def get_add_prediction():
+def get_all_predictions():
     predictions = list(mongo.db.predictions.find({}))
+    doctor_preds = list(mongo.db.doctor_pred.find({}))
+    medicine_preds = list(mongo.db.medicines_pred.find({}))
 
     for pred in predictions:
         pred['_id'] = str(pred['_id'])
 
+        # Attach username
         user_id = pred.get('user_id')
         if user_id:
             try:
-                # Convert string user_id to ObjectId before querying
                 user_obj_id = ObjectId(user_id)
                 user = mongo.db.users.find_one({"_id": user_obj_id})
-
-                if user:
-                    pred['username'] = user.get('username', 'Unknown')
-                else:
-                    pred['username'] = 'Unknown (user not found)'
+                pred['username'] = user.get('username', 'Unknown') if user else 'Unknown (user not found)'
             except Exception as e:
                 print(f"[ERROR] Invalid ObjectId: {user_id} -> {e}")
                 pred['username'] = 'Unknown (invalid ID)'
         else:
             pred['username'] = 'Unknown (no user_id)'
+
+        # Attach recommended_doctors
+        pred['recommended_doctors'] = []
+        for doc in doctor_preds:
+            if doc.get('user_id') == user_id and doc.get('predicted_disease') == pred.get('predicted_disease'):
+                pred['recommended_doctors'] = doc.get('recommended_doctors', [])
+                break  # Assume one match is enough
+
+        # Attach recommended_medicines
+        pred['recommended_medicines'] = []
+        for med in medicine_preds:
+            if med.get('user_id') == user_id and pred.get('predicted_disease') in med.get('predicted_disease', []):
+                pred['recommended_medicines'] = med.get('recommended_medicines', [])
+                break
 
     return jsonify({'predictions': predictions}), 200
 

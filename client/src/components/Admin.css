@@ -7,3 +7,16 @@
 .admin-reports .table td {
   word-break: break-word;
 }
+
+.vertical-header {
+  writing-mode: vertical-lr; /* Make text vertical */
+  transform: rotate(180deg); /* Rotate text for proper readability */
+  text-align: center; /* Center-align the text within the header */
+  white-space: nowrap; /* Prevent the text from wrapping */
+  padding: 10px; /* Optional: Adjust the padding to make the header space more balanced */
+}
+.table th {
+  border-bottom: 1px solid #ddd; /* Optional: Adjust border style */
+}
+
+

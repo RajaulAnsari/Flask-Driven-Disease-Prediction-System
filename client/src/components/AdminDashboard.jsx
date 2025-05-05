@@ -112,6 +112,8 @@ function AdminDashboard() {
                 <th>Medications</th>
                 <th>Diets</th>
                 <th>Workouts</th>
+                <th>Recommended Doctors</th>
+                <th>Recommended Medicines</th>
                 <th>Date</th>
               </tr>
             </thead>
@@ -127,6 +129,58 @@ function AdminDashboard() {
                   <td>{report.medications.join(", ")}</td>
                   <td>{report.diets.join(", ")}</td>
                   <td>{report.workouts.join(", ")}</td>
+
+                  {/* Display Recommended Doctors without duplication */}
+                  <td>
+                    {report.recommended_doctors &&
+                    report.recommended_doctors.length > 0 ? (
+                      <ul>
+                        {[
+                          ...new Map(
+                            report.recommended_doctors.map((doctor) => [
+                              `${doctor.name}-${doctor.specialist}`,
+                              doctor,
+                            ])
+                          ).values(),
+                        ].map((doctor, i) => (
+                          <li key={i}>
+                            <strong>{doctor.name}</strong> ({doctor.specialist})
+                            <br />
+                            Qualifications: {doctor.qualifications}
+                            <br />
+                            Satisfaction: {doctor.satisfaction}
+                          </li>
+                        ))}
+                      </ul>
+                    ) : (
+                      "No recommended doctors"
+                    )}
+                  </td>
+
+                  {/* Display Recommended Medicines */}
+                  <td>
+                    {report.recommended_medicines &&
+                    report.recommended_medicines.length > 0 ? (
+                      <ul>
+                        {report.recommended_medicines.map((med, i) => (
+                          <li key={i}>
+                            <strong>{med.medicine_name}</strong> (Score:{" "}
+                            {med.medicine_score})
+                            <br />
+                            <img
+                              src={med.medicine_image_url}
+                              alt={med.medicine_name}
+                              width="100"
+                              style={{ marginTop: "5px", borderRadius: "8px" }}
+                            />
+                          </li>
+                        ))}
+                      </ul>
+                    ) : (
+                      "No recommended medicines"
+                    )}
+                  </td>
+
                   <td className="text-nowrap">
                     {report.datetime
                       ? new Date(report.datetime.$date).toLocaleString()
