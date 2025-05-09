@@ -262,11 +262,11 @@ const SymptomsChecker = () => {
             onChange={handleInputChange}
           />
           {suggestions.length > 0 && (
-            <ul className="suggestions-list">
+            <ul className="list-group mb-2">
               {suggestions.map((suggestion, index) => (
                 <li
                   key={index}
-                  className="suggestion-item"
+                  className="list-group-item list-group-item-action"
                   onClick={() => handleSuggestionClick(suggestion)}
                 >
                   {suggestion}
