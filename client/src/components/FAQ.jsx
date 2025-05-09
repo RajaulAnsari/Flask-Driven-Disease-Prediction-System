@@ -2,6 +2,7 @@ import React from "react";
 import { MDBAccordion, MDBAccordionItem, MDBContainer } from "mdb-react-ui-kit";
 import Navbar from "./Navbar";
 import Footer from "./Footer";
+import Chat from "./Chat";
 
 export default function FAQ() {
   return (
@@ -128,6 +129,7 @@ export default function FAQ() {
           </MDBAccordionItem>
         </MDBAccordion>
       </MDBContainer>
+      <Chat />
       <Footer />
     </>
   );

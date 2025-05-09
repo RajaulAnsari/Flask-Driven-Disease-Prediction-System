@@ -3,6 +3,7 @@ import Navbar from "./Navbar";
 import Footer from "./Footer";
 import "bootstrap/dist/css/bootstrap.min.css";
 import "./Register.css";
+import Chat from "./Chat";
 
 function Register() {
   const [formData, setFormData] = useState({
@@ -203,7 +204,7 @@ function Register() {
           </div>
         </div>
       </section>
-
+      <Chat />
       <Footer />
     </>
   );

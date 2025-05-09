@@ -3,6 +3,7 @@ import { Card, Button, Container, Row, Col } from "react-bootstrap";
 import { Link } from "react-router-dom";
 import Navbar from "./Navbar";
 import Footer from "./Footer";
+import Chat from "./Chat";
 
 import diseasesImg from "../assets/diseases.png";
 import immunityImg from "../assets/immunity.png";
@@ -115,6 +116,7 @@ function BlogPage() {
           ))}
         </Row>
       </Container>
+      <Chat />
       <Footer />
     </>
   );

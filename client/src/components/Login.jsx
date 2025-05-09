@@ -2,7 +2,8 @@ import React, { useState } from "react";
 import Navbar from "./Navbar";
 import Footer from "./Footer";
 import "bootstrap/dist/css/bootstrap.min.css";
-import "./Login.css"; // Optional: for custom styles
+import "./Login.css";
+import Chat from "./Chat";
 
 function Login() {
   const [formData, setFormData] = useState({
@@ -141,7 +142,7 @@ function Login() {
           </div>
         </div>
       </section>
-
+      <Chat />
       <Footer />
     </>
   );

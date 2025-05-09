@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import Footer from "./Footer";
 import Navbar from "./Navbar";
+import Chat from "./Chat";
 
 // Define the symptom dictionary
 const symptoms_dict = {
@@ -497,6 +498,7 @@ const SymptomsChecker = () => {
         )}
       </div>
       <br />
+      <Chat />
       <Footer />
     </>
   );

@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import Navbar from "./Navbar";
 import Footer from "./Footer";
+import Chat from "./Chat";
 
 function UserHistory() {
   const [reports, setReports] = useState([]);
@@ -167,6 +168,7 @@ function UserHistory() {
           )}
         </div>
       </section>
+      <Chat />
       <Footer />
     </>
   );
