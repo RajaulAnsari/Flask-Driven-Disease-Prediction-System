@@ -146,6 +146,9 @@ const SymptomsChecker = () => {
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
   const [suggestions, setSuggestions] = useState([]);
+  const [showRecommendations, setShowRecommendations] = useState(false);
+  const [showMedicines, setShowMedicines] = useState(false);
+  const [showDoctors, setShowDoctors] = useState(false);
   const token = localStorage.getItem("token");
 
   const handleSubmit = async (e) => {
@@ -157,6 +160,9 @@ const SymptomsChecker = () => {
     setResult(null);
     setMedicines(null);
     setDoctors(null);
+    setShowRecommendations(false);
+    setShowMedicines(false);
+    setShowDoctors(false);
 
     try {
       const response = await fetch("http://127.0.0.1:5000/api/predict", {
@@ -215,6 +221,7 @@ const SymptomsChecker = () => {
               "Currently no doctors available — we are working on that!"
           );
         }
+        setShowRecommendations(true);
       } else {
         setError(data.error || "Something went wrong.");
       }
@@ -310,63 +317,113 @@ const SymptomsChecker = () => {
                 </tr>
               </tbody>
             </table>
-          </div>
-        )}
 
-        {medicines && (
-          <div className="mt-4">
-            <h4 className="mb-3 text-info">Recommended Medicines</h4>
-            <ul>
-              {medicines.map((medicine, index) => (
-                <li key={index}>
-                  <img
-                    src={medicine.medicine_image_url}
-                    alt="medicine"
-                    width=""
-                    style={{ marginRight: "10px" }}
-                  />
-                  <br />
-                  <strong>{medicine.medicine_name}</strong> -{" "}
-                  {medicine.medicine_score}⭐
-                </li>
-              ))}
-            </ul>
-          </div>
-        )}
-
-        {doctors && doctors.length > 0 && (
-          <div className="mt-4">
-            <h4 className="mb-3 text-info">Recommended Doctors</h4>
-            <div className="row">
-              {doctors
-                .filter(
-                  (doc, index, self) =>
-                    index ===
-                    self.findIndex(
-                      (d) =>
-                        d.name === doc.name && d.specialist === doc.specialist
-                    )
-                ) // Remove duplicates based on name and specialist
-                .map((doc, index) => (
-                  <div key={index} className="col-md-6 mb-3">
-                    <div className="card">
-                      <div className="card-body">
-                        <h5 className="card-title">{doc.name}</h5>
-                        <p className="card-text">
-                          <strong>Specialist:</strong> {doc.specialist}
-                          <br />
-                          <strong>Qualifications:</strong> {doc.qualifications}
-                          <br />
-                          <strong>Satisfaction:</strong> {doc.satisfaction}
-                        </p>
-                      </div>
+            {showRecommendations && (
+              <div className="card mt-3">
+                <div className="card-body">
+                  <h5
+                    className="card-title"
+                    style={{ cursor: "pointer" }}
+                    onClick={() => setShowMedicines(!showMedicines)}
+                  >
+                    {showMedicines ? "Hide Medicines" : "Show Medicines"}
+                  </h5>
+                  {showMedicines && medicines && medicines.length > 0 && (
+                    <div className="mt-3">
+                      <h6 className="text-info">Recommended Medicines</h6>
+                      <ul>
+                        {medicines.map((medicine, index) => (
+                          <li
+                            key={index}
+                            style={{
+                              listStyleType: "none",
+                            }}
+                          >
+                            <img
+                              src={medicine.medicine_image_url}
+                              alt="medicine"
+                              style={{
+                                marginRight: "10px",
+                                maxWidth: "100%", // Adjust as needed
+                                maxHeight: "100%", // Adjust as needed
+                              }}
+                            />
+                            <br />
+                            <strong>{medicine.medicine_name}</strong> -{" "}
+                            {medicine.medicine_score}⭐
+                          </li>
+                        ))}
+                      </ul>
                     </div>
-                  </div>
-                ))}
-            </div>
+                  )}
+                  {showMedicines && medicines && medicines.length === 0 && (
+                    <div className="mt-3">
+                      <p className="text-warning">
+                        No specific medicines found for this prediction.
+                      </p>
+                    </div>
+                  )}
+                </div>
+              </div>
+            )}
+
+            {showRecommendations && (
+              <div className="card mt-3">
+                <div className="card-body">
+                  <h5
+                    className="card-title"
+                    style={{ cursor: "pointer" }}
+                    onClick={() => setShowDoctors(!showDoctors)}
+                  >
+                    {showDoctors ? "Hide Doctors" : "Show Doctors"}
+                  </h5>
+                  {showDoctors && doctors && doctors.length > 0 && (
+                    <div className="mt-3 row">
+                      <h6 className="text-info">Recommended Doctors</h6>
+                      {doctors
+                        .filter(
+                          (doc, index, self) =>
+                            index ===
+                            self.findIndex(
+                              (d) =>
+                                d.name === doc.name &&
+                                d.specialist === doc.specialist
+                            )
+                        )
+                        .map((doc, index) => (
+                          <div key={index} className="col-md-6 mb-3">
+                            <div className="card">
+                              <div className="card-body">
+                                <h6 className="card-title">{doc.name}</h6>
+                                <p className="card-text">
+                                  <strong>Specialist:</strong> {doc.specialist}
+                                  <br />
+                                  <strong>Qualifications:</strong>{" "}
+                                  {doc.qualifications}
+                                  <br />
+                                  <strong>Satisfaction:</strong>{" "}
+                                  {doc.satisfaction}
+                                </p>
+                              </div>
+                            </div>
+                          </div>
+                        ))}
+                    </div>
+                  )}
+                  {showDoctors && doctors && doctors.length === 0 && (
+                    <div className="mt-3">
+                      <p className="text-warning">
+                        Currently no doctors available for this prediction.
+                      </p>
+                    </div>
+                  )}
+                </div>
+              </div>
+            )}
           </div>
         )}
       </div>
+      <br />
       <Footer />
     </>
   );
