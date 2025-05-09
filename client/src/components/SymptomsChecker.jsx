@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import Footer from "./Footer";
 import Navbar from "./Navbar";
 
@@ -142,7 +142,9 @@ const SymptomsChecker = () => {
   const [symptoms, setSymptoms] = useState("");
   const [result, setResult] = useState(null);
   const [medicines, setMedicines] = useState(null);
+  const [visibleMedicines, setVisibleMedicines] = useState([]);
   const [doctors, setDoctors] = useState(null);
+  const [visibleDoctors, setVisibleDoctors] = useState([]);
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
   const [suggestions, setSuggestions] = useState([]);
@@ -150,6 +152,18 @@ const SymptomsChecker = () => {
   const [showMedicines, setShowMedicines] = useState(false);
   const [showDoctors, setShowDoctors] = useState(false);
   const token = localStorage.getItem("token");
+
+  useEffect(() => {
+    if (medicines) {
+      setVisibleMedicines([...medicines]);
+    }
+  }, [medicines]);
+
+  useEffect(() => {
+    if (doctors) {
+      setVisibleDoctors([...doctors]);
+    }
+  }, [doctors]);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -163,6 +177,8 @@ const SymptomsChecker = () => {
     setShowRecommendations(false);
     setShowMedicines(false);
     setShowDoctors(false);
+    setVisibleMedicines([]);
+    setVisibleDoctors([]);
 
     try {
       const response = await fetch("http://127.0.0.1:5000/api/predict", {
@@ -259,7 +275,7 @@ const SymptomsChecker = () => {
     <>
       <Navbar />
       <div className="container mt-5">
-        <h2>Disease Prediction & Medicine Recommendation</h2>
+        <h2>Disease Prediction, Medicine Recommendation & Doctor Suggestion</h2>
         <form onSubmit={handleSubmit}>
           <input
             type="text"
@@ -305,11 +321,23 @@ const SymptomsChecker = () => {
                 </tr>
                 <tr>
                   <th>Medications</th>
-                  <td>{result.medications.join(", ")}</td>
+                  <td>
+                    {result.medications.length > 0
+                      ? JSON.parse(
+                          result.medications[0].replace(/'/g, '"')
+                        ).join(", ")
+                      : ""}
+                  </td>
                 </tr>
                 <tr>
                   <th>Diet</th>
-                  <td>{result.diets.join(", ")}</td>
+                  <td>
+                    {result.diets.length > 0
+                      ? JSON.parse(result.diets[0].replace(/'/g, '"')).join(
+                          ", "
+                        )
+                      : ""}
+                  </td>
                 </tr>
                 <tr>
                   <th>Workout</th>
@@ -321,39 +349,62 @@ const SymptomsChecker = () => {
             {showRecommendations && (
               <div className="card mt-3">
                 <div className="card-body">
-                  <h5
-                    className="card-title"
-                    style={{ cursor: "pointer" }}
-                    onClick={() => setShowMedicines(!showMedicines)}
-                  >
-                    {showMedicines ? "Hide Medicines" : "Show Medicines"}
-                  </h5>
+                  <div className="d-flex justify-content-between align-items-center">
+                    <h5 className="card-title mb-0">Recommended Medicines</h5>
+                    {showMedicines ? (
+                      <button
+                        type="button"
+                        className="btn-close btn-sm"
+                        aria-label="Hide Medicines"
+                        onClick={() => setShowMedicines(false)}
+                      ></button>
+                    ) : (
+                      <button
+                        type="button"
+                        className="btn btn-link btn-sm text-decoration-none fs-5 text-black"
+                        onClick={() => setShowMedicines(true)}
+                        style={{ padding: 0, marginLeft: "10px" }}
+                      >
+                        Show
+                      </button>
+                    )}
+                  </div>
                   {showMedicines && medicines && medicines.length > 0 && (
-                    <div className="mt-3">
-                      <h6 className="text-info">Recommended Medicines</h6>
-                      <ul>
-                        {medicines.map((medicine, index) => (
-                          <li
-                            key={index}
-                            style={{
-                              listStyleType: "none",
-                            }}
-                          >
-                            <img
-                              src={medicine.medicine_image_url}
-                              alt="medicine"
-                              style={{
-                                marginRight: "10px",
-                                maxWidth: "100%", // Adjust as needed
-                                maxHeight: "100%", // Adjust as needed
-                              }}
-                            />
-                            <br />
-                            <strong>{medicine.medicine_name}</strong> -{" "}
-                            {medicine.medicine_score}⭐
-                          </li>
-                        ))}
-                      </ul>
+                    <div className="mt-3 row row-cols-1 row-cols-md-2 row-cols-lg-3 g-3">
+                      {visibleMedicines.map((medicine, index) => (
+                        <div key={index} className="col">
+                          <div className="card-body d-flex justify-content-between align-items-start">
+                            <div>
+                              <img
+                                src={medicine.medicine_image_url}
+                                alt="medicine"
+                                style={{
+                                  maxWidth: "100%",
+                                  maxHeight: "100%",
+                                  marginLeft: "50%",
+                                  verticalAlign: "middle",
+                                }}
+                              />
+                              <strong>{medicine.medicine_name}</strong>
+                              <br />
+                              <small className="text-muted">
+                                Satisfaction: {medicine.medicine_score}⭐
+                              </small>
+                            </div>
+                          </div>
+                        </div>
+                      ))}
+                      {visibleMedicines.length === 0 &&
+                        medicines?.length > 0 && (
+                          <p className="text-warning mt-2">
+                            No medicines are currently visible.
+                          </p>
+                        )}
+                      {medicines?.length === 0 && (
+                        <p className="text-warning mt-2">
+                          No specific medicines found for this prediction.
+                        </p>
+                      )}
                     </div>
                   )}
                   {showMedicines && medicines && medicines.length === 0 && (
@@ -370,17 +421,29 @@ const SymptomsChecker = () => {
             {showRecommendations && (
               <div className="card mt-3">
                 <div className="card-body">
-                  <h5
-                    className="card-title"
-                    style={{ cursor: "pointer" }}
-                    onClick={() => setShowDoctors(!showDoctors)}
-                  >
-                    {showDoctors ? "Hide Doctors" : "Show Doctors"}
-                  </h5>
+                  <div className="d-flex justify-content-between align-items-center">
+                    <h5 className="card-title mb-0">Recommended Doctors</h5>
+                    {showDoctors ? (
+                      <button
+                        type="button"
+                        className="btn-close btn-sm"
+                        aria-label="Hide Medicines"
+                        onClick={() => setShowDoctors(false)}
+                      ></button>
+                    ) : (
+                      <button
+                        type="button"
+                        className="btn btn-link btn-sm text-decoration-none fs-5 text-black"
+                        onClick={() => setShowDoctors(true)}
+                        style={{ padding: 0, marginLeft: "10px" }}
+                      >
+                        Show
+                      </button>
+                    )}
+                  </div>
                   {showDoctors && doctors && doctors.length > 0 && (
-                    <div className="mt-3 row">
-                      <h6 className="text-info">Recommended Doctors</h6>
-                      {doctors
+                    <div className="mt-3 row row-cols-1 row-cols-md-2 g-3">
+                      {visibleDoctors
                         .filter(
                           (doc, index, self) =>
                             index ===
@@ -391,7 +454,7 @@ const SymptomsChecker = () => {
                             )
                         )
                         .map((doc, index) => (
-                          <div key={index} className="col-md-6 mb-3">
+                          <div key={index} className="col">
                             <div className="card">
                               <div className="card-body">
                                 <h6 className="card-title">{doc.name}</h6>
@@ -408,6 +471,16 @@ const SymptomsChecker = () => {
                             </div>
                           </div>
                         ))}
+                      {visibleDoctors.length === 0 && doctors?.length > 0 && (
+                        <p className="text-warning mt-2">
+                          No doctors are currently visible.
+                        </p>
+                      )}
+                      {doctors?.length === 0 && (
+                        <p className="text-warning mt-2">
+                          Currently no doctors available for this prediction.
+                        </p>
+                      )}
                     </div>
                   )}
                   {showDoctors && doctors && doctors.length === 0 && (
