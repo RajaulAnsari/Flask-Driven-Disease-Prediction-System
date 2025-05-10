@@ -12,6 +12,9 @@ import BlogDetails from "./components/BlogDetails";
 import FAQ from "./components/FAQ";
 import UserHistory from "./components/UserHistory";
 import AdminAllUsers from "./components/AdminAllUsers";
+import Mission from "./components/Mission";
+import HowItWorks from "./components/HowItWorks";
+import PrivacyPolicy from "./components/PrivactPolicy";
 const Home = lazy(() => import("./components/Home"));
 
 function App() {
@@ -112,6 +115,30 @@ function App() {
             element: (
               <Suspense fallback={<div>Loading...</div>}>
                 <FAQ />
+              </Suspense>
+            ),
+          },
+          {
+            path: "/mission",
+            element: (
+              <Suspense fallback={<div>Loading...</div>}>
+                <Mission />
+              </Suspense>
+            ),
+          },
+          {
+            path: "/works",
+            element: (
+              <Suspense fallback={<div>Loading...</div>}>
+                <HowItWorks />
+              </Suspense>
+            ),
+          },
+          {
+            path: "/privacy&policy",
+            element: (
+              <Suspense fallback={<div>Loading...</div>}>
+                <PrivacyPolicy />
               </Suspense>
             ),
           },

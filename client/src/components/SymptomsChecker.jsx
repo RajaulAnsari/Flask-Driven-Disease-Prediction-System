@@ -284,6 +284,7 @@ const SymptomsChecker = () => {
             placeholder="Enter symptoms, comma separated"
             value={symptoms}
             onChange={handleInputChange}
+            required
           />
           {suggestions.length > 0 && (
             <ul className="list-group mb-2">

@@ -17,13 +17,13 @@ const Footer = () => {
         <div className="footer-row">
           <div className="footer-column">
             <p className="footer-heading">About Us</p>
-            <a href="#" className="footer-link">
+            <a href="/mission" className="footer-link">
               Our Mission
             </a>
-            <a href="#" className="footer-link">
+            <a href="/works" className="footer-link">
               How It Works
             </a>
-            <a href="#" className="footer-link">
+            <a href="/privacy&policy" className="footer-link">
               Privacy Policy
             </a>
           </div>
@@ -33,13 +33,10 @@ const Footer = () => {
             <a href="/symptomschecker" className="footer-link">
               Symptom Checker
             </a>
-            <a href="#" className="footer-link">
+            <a href="/reports" className="footer-link">
               Health Reports
             </a>
-            <a href="#" className="footer-link">
-              AI Diagnosis
-            </a>
-            <a href="#" className="footer-link">
+            <a href="/blog" className="footer-link">
               Medical Insights
             </a>
           </div>
