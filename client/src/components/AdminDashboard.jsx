@@ -9,6 +9,7 @@ function AdminDashboard() {
   const navigate = useNavigate();
 
   useEffect(() => {
+    // Fetch all prediction reports on component mount
     const fetchReports = async () => {
       const token = localStorage.getItem("adminToken");
       if (!token) {

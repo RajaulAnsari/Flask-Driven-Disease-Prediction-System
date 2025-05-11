@@ -6,6 +6,7 @@ import "./Register.css";
 import Chat from "./Chat";
 
 function Register() {
+  // Initialize state for form data
   const [formData, setFormData] = useState({
     name: "",
     email: "",
@@ -14,9 +15,11 @@ function Register() {
     acceptTerms: false,
   });
 
+  // State for displaying status message and loading spinner
   const [message, setMessage] = useState("");
   const [isLoading, setIsLoading] = useState(false);
 
+  // Handle input changes (including checkbox)
   const handleChange = (e) => {
     const { id, value, type, checked } = e.target;
     setFormData({
@@ -25,22 +28,27 @@ function Register() {
     });
   };
 
+  // Handle form submission
   const handleSubmit = async (e) => {
     e.preventDefault();
 
+    // Password match validation
     if (formData.password !== formData.confirmPassword) {
       setMessage("❗ Passwords do not match.");
       return;
     }
 
+    // Terms and conditions checkbox validation
     if (!formData.acceptTerms) {
       setMessage("❗ You must accept the terms and conditions.");
       return;
     }
 
+    // Show loading spinner
     setIsLoading(true);
 
     try {
+      // Send POST request to register API
       const res = await fetch("http://localhost:5000/api/register", {
         method: "POST",
         headers: {
@@ -53,9 +61,11 @@ function Register() {
         }),
       });
 
+      // Parse JSON response
       const data = await res.json();
 
       if (res.ok) {
+        // On success: show message and reset form
         setMessage("✅ " + (data.message || "Registered successfully!"));
         setFormData({
           name: "",
@@ -65,22 +75,28 @@ function Register() {
           acceptTerms: false,
         });
       } else {
+        // Show error message from server
         setMessage(`❗ ${data.message || "Registration failed."}`);
       }
     } catch (err) {
+      // Handle fetch or network errors
       setMessage("❗ Server error. Please try again later.");
     } finally {
+      // Hide loading spinner
       setIsLoading(false);
     }
   };
 
   return (
     <>
+      {/* Top navigation bar */}
       <Navbar />
 
+      {/* Registration form section */}
       <section className="">
         <div className="container-fluid h-custom mt-5">
           <div className="row d-flex justify-content-center align-items-center h-100">
+            {/* Image section */}
             <div className="col-md-9 col-lg-6 col-xl-5">
               <img
                 src="https://mdbcdn.b-cdn.net/img/Photos/new-templates/bootstrap-login-form/draw2.webp"
@@ -88,9 +104,11 @@ function Register() {
                 alt="Register Illustration"
               />
             </div>
+
+            {/* Form section */}
             <div className="col-md-8 col-lg-6 col-xl-4 offset-xl-1">
               <form onSubmit={handleSubmit}>
-                {/* Name input */}
+                {/* Full Name input */}
                 <div className="form-outline mb-4">
                   <input
                     type="text"
@@ -154,6 +172,7 @@ function Register() {
                   </label>
                 </div>
 
+                {/* Terms and conditions checkbox */}
                 <div className="form-check mb-4">
                   <input
                     className="form-check-input"
@@ -167,12 +186,14 @@ function Register() {
                   </label>
                 </div>
 
+                {/* Display success/error messages */}
                 {message && (
                   <div className="alert alert-info py-2" role="alert">
                     {message}
                   </div>
                 )}
 
+                {/* Submit button */}
                 <div className="text-center text-lg-start mt-4 pt-2">
                   <button
                     type="submit"
@@ -192,6 +213,8 @@ function Register() {
                       "Register"
                     )}
                   </button>
+
+                  {/* Link to login page */}
                   <p className="small fw-bold mt-2 pt-1 mb-0">
                     Already have an account?{" "}
                     <a href="/login" className="link-danger">
@@ -204,7 +227,11 @@ function Register() {
           </div>
         </div>
       </section>
+
+      {/* Chat assistant component */}
       <Chat />
+
+      {/* Page footer */}
       <Footer />
     </>
   );

@@ -1,8 +1,9 @@
-// src/pages/BlogDetailPage.jsx
 import React from "react";
 import { useParams, Link } from "react-router-dom";
 import Navbar from "./Navbar";
 import Footer from "./Footer";
+
+// Importing images used for each blog post
 
 import diseasesImg from "../assets/diseases.png";
 import immunityImg from "../assets/immunity.png";

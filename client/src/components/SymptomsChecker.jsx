@@ -140,6 +140,7 @@ const symptoms_dict = {
 };
 
 const SymptomsChecker = () => {
+  // State variables for symptoms input, API responses, and UI behavior
   const [symptoms, setSymptoms] = useState("");
   const [result, setResult] = useState(null);
   const [medicines, setMedicines] = useState(null);
@@ -152,24 +153,28 @@ const SymptomsChecker = () => {
   const [showRecommendations, setShowRecommendations] = useState(false);
   const [showMedicines, setShowMedicines] = useState(false);
   const [showDoctors, setShowDoctors] = useState(false);
-  const token = localStorage.getItem("token");
+  const token = localStorage.getItem("token"); // Token for authentication
 
+  // Update visible medicines list when medicines state is updated
   useEffect(() => {
     if (medicines) {
       setVisibleMedicines([...medicines]);
     }
   }, [medicines]);
 
+  // Update visible doctors list when doctors state is updated
   useEffect(() => {
     if (doctors) {
       setVisibleDoctors([...doctors]);
     }
   }, [doctors]);
 
+  // Handle form submission to predict disease and get recommendations
   const handleSubmit = async (e) => {
     e.preventDefault();
     const symptomList = symptoms.split(",").map((s) => s.trim());
 
+    // Reset states
     setLoading(true);
     setError("");
     setResult(null);
@@ -182,6 +187,7 @@ const SymptomsChecker = () => {
     setVisibleDoctors([]);
 
     try {
+      // Predict disease from symptoms
       const response = await fetch("http://127.0.0.1:5000/api/predict", {
         method: "POST",
         headers: {
@@ -193,8 +199,9 @@ const SymptomsChecker = () => {
       const data = await response.json();
 
       if (response.ok) {
-        setResult(data);
+        setResult(data); // Set predicted disease result
 
+        // Fetch medicine recommendations
         const medicineResponse = await fetch(
           "http://127.0.0.1:5000/api/medicine",
           {
@@ -217,6 +224,7 @@ const SymptomsChecker = () => {
           setError(medicineData.message || "No medicines found.");
         }
 
+        // Fetch doctor recommendations
         const doctorResponse = await fetch("http://127.0.0.1:5000/api/doctor", {
           method: "POST",
           headers: {
@@ -238,6 +246,7 @@ const SymptomsChecker = () => {
               "Currently no doctors available — we are working on that!"
           );
         }
+        // Show result section
         setShowRecommendations(true);
       } else {
         setError(data.error || "Something went wrong.");
@@ -246,15 +255,19 @@ const SymptomsChecker = () => {
       console.error(err);
       setError("Error connecting to the backend.");
     } finally {
-      setLoading(false);
+      setLoading(false); // Stop loading spinner
     }
   };
 
+  // Handle real-time input change for symptom entry
   const handleInputChange = (e) => {
     const inputValue = e.target.value;
     setSymptoms(inputValue);
 
+    // Extract last symptom for suggestion filtering
     const lastSymptom = inputValue.split(",").pop().trim();
+
+    // Filter symptoms for suggestions
     const filteredSuggestions = Object.keys(symptoms_dict).filter(
       (symptom) =>
         symptom.toLowerCase().includes(lastSymptom.toLowerCase()) && lastSymptom
@@ -262,6 +275,7 @@ const SymptomsChecker = () => {
     setSuggestions(filteredSuggestions);
   };
 
+  // Handle suggestion click to autocomplete symptom input
   const handleSuggestionClick = (suggestion) => {
     setSymptoms((prev) => {
       const lastCommaIndex = prev.lastIndexOf(",");
@@ -269,7 +283,7 @@ const SymptomsChecker = () => {
         lastCommaIndex >= 0 ? prev.slice(0, lastCommaIndex + 1) : "";
       return newInput + suggestion;
     });
-    setSuggestions([]);
+    setSuggestions([]); // Clear suggestions
   };
 
   return (

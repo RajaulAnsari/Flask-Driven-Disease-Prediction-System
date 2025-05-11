@@ -1,17 +1,24 @@
-// src/components/AdminUsers.js
-
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 
 function AdminAllUsers() {
+  // state to store user list
   const [users, setUsers] = useState([]);
+  // Loading state while fetching users
   const [loading, setLoading] = useState(true);
+  //Error state in case fails fetching
   const [error, setError] = useState(null);
+
+  // React router navigation hook
   const navigate = useNavigate();
 
+  // useEffect to fetch users when component mounts
   useEffect(() => {
     const fetchUsers = async () => {
+      // get admin token
       const token = localStorage.getItem("adminToken");
+
+      // Handle missing token
       if (!token) {
         console.error("No token found in localStorage");
         setError("No token found. Please log in as an admin.");
@@ -19,17 +26,17 @@ function AdminAllUsers() {
       }
 
       try {
+        // Fetch request to backend API to get all users
         const response = await fetch(
           "http://127.0.0.1:5000/api/admin/all-users",
           {
             method: "GET",
             headers: {
               "Content-Type": "application/json",
-              // Authorization: `Bearer ${token}`, // Optional
             },
           }
         );
-
+        // Handle unsuccessful response
         if (!response.ok) {
           throw new Error(`Failed to fetch users: ${response.statusText}`);
         }
@@ -40,34 +47,41 @@ function AdminAllUsers() {
         console.error("Fetch error:", err);
         setError(err.message);
       } finally {
+        // Stop loading once fetch completes
         setLoading(false);
       }
     };
 
-    fetchUsers();
+    fetchUsers(); // Call the async fetch function
   }, []);
 
+  // Function to handle admin logout
   const handleLogout = () => {
     localStorage.removeItem("adminToken");
     navigate("/admin");
   };
 
+  // Navigate to reports page
   const goToReports = () => {
     navigate("/admin/dashboard");
   };
 
+  // Navigate to users page
   const goToUsers = () => {
     navigate("/admin/users");
   };
 
+  // Show loading message while fetching
   if (loading) {
     return <div>Loading...</div>;
   }
 
+  // Show error message if fetch failed
   if (error) {
     return <div>Error: {error}</div>;
   }
 
+  // Render users table
   return (
     <div className="admin-users" style={{ padding: "20px" }}>
       {/* Header Buttons */}

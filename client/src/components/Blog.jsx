@@ -5,6 +5,7 @@ import Navbar from "./Navbar";
 import Footer from "./Footer";
 import Chat from "./Chat";
 
+// Importing images used for each blog post
 import diseasesImg from "../assets/diseases.png";
 import immunityImg from "../assets/immunity.png";
 import aiHealthcareImg from "../assets/ai-healthcare.png";
@@ -14,6 +15,7 @@ import yogaMeditationImg from "../assets/yoga-meditation.png";
 import vaccinationImg from "../assets/vaccination.png";
 import sleepImmunityImg from "../assets/sleep-immunity.png";
 
+// Array of blog post data
 const blogPosts = [
   {
     id: 1,

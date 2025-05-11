@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useRef } from "react";
 import "./ChatButton.css";
 
+// Predefined questions displayed to the user
 const predefinedQuestions = [
   "What are the symptoms of COVID-19?",
   "How can I prevent seasonal flu?",
@@ -12,6 +13,7 @@ const predefinedQuestions = [
   "I want to talk to a doctor",
 ];
 
+// Predefined responses mapped to questions
 const responses = {
   "What are the symptoms of COVID-19?":
     "COVID-19 symptoms include fever, dry cough, fatigue, and loss of taste or smell. Some may experience sore throat, body aches, or difficulty breathing.",
@@ -32,10 +34,12 @@ const responses = {
 };
 
 const ChatButton = ({ isOpen, onClose }) => {
+  // State to keep track of conversation messages
   const [messages, setMessages] = useState([
     { from: "bot", text: "Hello! This is ChatButton. How may I help you?" },
   ]);
 
+  // Handle sending a message and generating a response
   const sendMessage = (text) => {
     const newMessages = [...messages, { from: "user", text }];
     const reply = responses[text] || "Let me get back to you on that.";
@@ -43,8 +47,10 @@ const ChatButton = ({ isOpen, onClose }) => {
     setMessages(newMessages);
   };
 
+  // Ref to auto-scroll to the bottom of the chat
   const messagesEndRef = useRef(null);
 
+  // Scroll to bottom when messages update
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
   };
@@ -53,6 +59,7 @@ const ChatButton = ({ isOpen, onClose }) => {
     scrollToBottom();
   }, [messages]);
 
+  // Do not render the component if it's not open
   if (!isOpen) return null;
 
   return (
